@@ -273,7 +273,7 @@ Lua file and returns the contents as a Lua string.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">readfile</span><span class="hljs-params">( path )</span></span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">readluafile</span><span class="hljs-params">( path )</span></span>
   <span class="hljs-keyword">local</span> is_bin = is_binary( path )
   <span class="hljs-keyword">local</span> f = <span class="hljs-built_in">assert</span>( <span class="hljs-built_in">io</span>.open( path, is_bin <span class="hljs-keyword">and</span> <span class="hljs-string">"rb"</span> <span class="hljs-keyword">or</span> <span class="hljs-string">"r"</span> ) )
   <span class="hljs-keyword">local</span> s = <span class="hljs-built_in">assert</span>( f:read( <span class="hljs-string">"*a"</span> ) )
@@ -449,7 +449,7 @@ specifying the interpreter on unixoid systems.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">if</span> script <span class="hljs-keyword">then</span>
-    out:write( <span class="hljs-string">"#!/usr/bin/env lua\n\n"</span> )
+    out:write( <span class="hljs-string">"#!/usr/bin/env lua\n\ndo\n\n"</span> )
   <span class="hljs-keyword">end</span></pre></div></div>
             
         </li>
@@ -471,7 +471,7 @@ is processed.</p>
     <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> path <span class="hljs-keyword">then</span>
       <span class="hljs-built_in">error</span>( <span class="hljs-string">"module `"</span>..m..<span class="hljs-string">"' not found:"</span>..msg )
     <span class="hljs-keyword">end</span>
-    <span class="hljs-keyword">local</span> bytes, is_bin = readfile( path )
+    <span class="hljs-keyword">local</span> bytes, is_bin = readluafile( path )
     <span class="hljs-keyword">if</span> is_bin <span class="hljs-keyword">or</span> dbg <span class="hljs-keyword">then</span></pre></div></div>
             
         </li>
@@ -545,13 +545,14 @@ embed it now that all dependent modules are available to
             </div>
             
             <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">if</span> script <span class="hljs-keyword">then</span>
-    <span class="hljs-keyword">local</span> bytes, is_bin = readfile( script )
+    out:write( <span class="hljs-string">"end\n\n"</span> )
+    <span class="hljs-keyword">local</span> bytes, is_bin = readluafile( script )
     <span class="hljs-keyword">if</span> is_bin <span class="hljs-keyword">or</span> dbg <span class="hljs-keyword">then</span>
       out:write( <span class="hljs-string">"assert( (loadstring or load)(\n"</span>,
                  (<span class="hljs-string">"%q"</span>):format( bytes ), <span class="hljs-string">"\n, '@'.."</span>,
                  (<span class="hljs-string">"%q"</span>):format( script ), <span class="hljs-string">" ) )( ... )\n\n"</span> )
     <span class="hljs-keyword">else</span>
-      out:write( <span class="hljs-string">"local _ENV = _ENV\ndo\n"</span>, bytes, <span class="hljs-string">"\nend\n\n"</span> )
+      out:write( bytes )
     <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">end</span>
 
